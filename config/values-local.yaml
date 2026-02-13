@@ -1,0 +1,17 @@
+# Local Environment Overrides (Kind/Minikube)
+global:
+  environment: local
+
+ingress:
+  className: nginx # standard for KIND/Minikube
+  hostSuffix: ".127.0.0.1.nip.io"
+
+persistence:
+  storageClass: standard # standard for KIND
+
+guardrails:
+  enabled: true
+
+networkPolicy:
+  enabled: true
+  allowExternalEgress: true

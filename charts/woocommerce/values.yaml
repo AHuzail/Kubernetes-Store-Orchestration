@@ -1,0 +1,85 @@
+wordpress:
+  image: wordpress:latest
+  port: 80
+  serviceType: ClusterIP
+  setup:
+    enabled: true
+    siteTitle: "My WooCommerce Store"
+    adminUser: ""
+    adminPassword: ""
+    adminEmail: ""
+    sampleProductTitle: "Sample Product"
+    sampleProducts:
+      - title: "Sample Hoodie"
+        price: "29.99"
+      - title: "Sample Mug"
+        price: "14.99"
+      - title: "Sample Sticker Pack"
+        price: "7.99"
+    phpMemoryLimit: "512M"
+    resources:
+      requests:
+        cpu: "200m"
+        memory: "512Mi"
+      limits:
+        cpu: "1"
+        memory: "1Gi"
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "256Mi"
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+  
+mysql:
+  image: mariadb:10.11
+  database: wordpress
+  user: wordpress
+  rootPassword: ""
+  password: ""
+  storageSize: 1Gi
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "512Mi"
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+
+ingress:
+  enabled: true
+  className: "nginx"
+  host: "store.local"
+
+persistence:
+  enabled: true
+  storageClass: "standard" # override in values-local/prod
+  accessMode: ReadWriteOnce
+  size: 1Gi
+
+guardrails:
+  enabled: false
+  resourceQuota:
+    pods: "10"
+    services: "5"
+    secrets: "10"
+    configmaps: "10"
+    persistentvolumeclaims: "5"
+    requests:
+      cpu: "1"
+      memory: "1Gi"
+    limits:
+      cpu: "2"
+      memory: "2Gi"
+  limitRange:
+    default:
+      cpu: "500m"
+      memory: "512Mi"
+    defaultRequest:
+      cpu: "200m"
+      memory: "256Mi"
+
+networkPolicy:
+  enabled: false
+  allowExternalEgress: false

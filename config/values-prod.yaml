@@ -1,0 +1,16 @@
+# Production Environment Overrides (VPS/k3s)
+global:
+  environment: production
+
+ingress:
+  className: traefik # standard for k3s
+  hostSuffix: ".example.com" # Should be configured by user
+
+persistence:
+  storageClass: local-path # standard for k3s
+
+guardrails:
+  enabled: true
+
+networkPolicy:
+  enabled: true

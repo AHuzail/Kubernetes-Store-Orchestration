@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+kubernetes
+pydantic
+pydantic-settings
+jinja2
+pyyaml
+uuid
+python-multipart
+starlette
+sqlalchemy

@@ -1,0 +1,35 @@
+{{- if .Values.guardrails.enabled -}}
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: {{ include "medusa.fullname" . }}-quota
+  labels:
+    {{- include "medusa.labels" . | nindent 4 }}
+spec:
+  hard:
+    pods: {{ .Values.guardrails.resourceQuota.pods | quote }}
+    services: {{ .Values.guardrails.resourceQuota.services | quote }}
+    secrets: {{ .Values.guardrails.resourceQuota.secrets | quote }}
+    configmaps: {{ .Values.guardrails.resourceQuota.configmaps | quote }}
+    persistentvolumeclaims: {{ .Values.guardrails.resourceQuota.persistentvolumeclaims | quote }}
+    requests.cpu: {{ .Values.guardrails.resourceQuota.requests.cpu | quote }}
+    requests.memory: {{ .Values.guardrails.resourceQuota.requests.memory | quote }}
+    limits.cpu: {{ .Values.guardrails.resourceQuota.limits.cpu | quote }}
+    limits.memory: {{ .Values.guardrails.resourceQuota.limits.memory | quote }}
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: {{ include "medusa.fullname" . }}-limits
+  labels:
+    {{- include "medusa.labels" . | nindent 4 }}
+spec:
+  limits:
+    - type: Container
+      default:
+        cpu: {{ .Values.guardrails.limitRange.default.cpu | quote }}
+        memory: {{ .Values.guardrails.limitRange.default.memory | quote }}
+      defaultRequest:
+        cpu: {{ .Values.guardrails.limitRange.defaultRequest.cpu | quote }}
+        memory: {{ .Values.guardrails.limitRange.defaultRequest.memory | quote }}
+{{- end }}
