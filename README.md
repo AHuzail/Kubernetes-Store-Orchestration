@@ -19,7 +19,7 @@ A Kubernetes-native platform for provisioning isolated WooCommerce and Medusa st
 
 1. **Clone and navigate to workspace:**
    ```powershell
-   cd c:\Users\Asus\.gemini\antigravity\playground\deep-lagoon
+   cd Kubernetes-Store-Orchestration
    ```
 
 2. **Install development dependencies:**
@@ -160,6 +160,14 @@ Once READY status is confirmed:
    - URL: `http://store-my-store-abc123.127.0.0.1.nip.io`
    - Note: Requires GHCR authentication credentials (see Production Deployment)
 
+### Placing an Order (WooCommerce)
+
+1. Open the store URL from the dashboard.
+2. Add any sample product to the cart.
+3. Proceed to checkout and submit the order (Cash on Delivery works for the demo).
+4. Optional verification: log in to `/wp-admin` and confirm the order appears in **WooCommerce > Orders**.
+5. For the full verification checklist, see **Manual Day-of-Demo** below.
+
 ### Deleting a Store
 
 1. **Via Dashboard:**
@@ -202,8 +210,6 @@ kubectl logs -n store-my-store-abc123 -l app=mysql
 kubectl logs -n store-my-store-abc123 -l app=medusa-backend
 ```
 
-## Manual Day-of-Demo (DoD) Verification
-
 ### WooCommerce Full Checkout Flow
 
 1. **Create a store** and wait for READY status
@@ -225,17 +231,7 @@ kubectl logs -n store-my-store-abc123 -l app=medusa-backend
    - Check the email address provided in checkout
    - Confirm order confirmation email arrived
 
-### Storing Screenshots/Video
 
-All evidence should be captured in `docs/demo-evidence/`:
-- `01-dashboard-store-creation.png` - Dashboard with store being created
-- `02-woocommerce-storefront.png` - Product listing page
-- `03-checkout-flow.png` - Checkout page with order details
-- `04-admin-panel-orders.png` - Shop Orders page showing new order
-- `05-order-email.png` - Order confirmation email
-- `demo-video.mp4` - Full end-to-end recording
-
-See [docs/DEMO_VIDEO_SCRIPT.md](docs/DEMO_VIDEO_SCRIPT.md) for detailed demo script.
 
 ## Troubleshooting
 
@@ -354,7 +350,7 @@ kubectl describe networkpolicy -n store-<store-name-hash>
 ## File Structure
 
 ```
-deep-lagoon/
+Kubernetes-Store-Orchestration/
 ├── README.md                           # This file
 ├── charts/
 │   ├── woocommerce/                   # WooCommerce Helm chart
@@ -565,7 +561,26 @@ cd src/frontend && .\scripts\run-frontend.ps1
      hostSuffix: ".yourdomain.com"
    ```
 
-4. **Deploy backend container:**
+    Recommended production overrides:
+    ```yaml
+    ingress:
+       className: traefik
+       hostSuffix: ".yourdomain.com"
+    persistence:
+       storageClass: local-path
+    guardrails:
+       enabled: true
+    networkPolicy:
+       enabled: true
+       allowExternalEgress: false
+    ```
+
+4. **Set provisioning environment:**
+   ```bash
+   export PROVISION_ENV=prod
+   ```
+
+5. **Deploy backend container:**
    ```bash
    # Build Docker image
    docker build -t deep-lagoon-backend:latest src/backend/
@@ -597,14 +612,29 @@ cd src/frontend && .\scripts\run-frontend.ps1
    EOF
    ```
 
-5. **Configure DNS** for `*.yourdomain.com` → VPS IP
+6. **Configure DNS** for `*.yourdomain.com` → VPS IP
 
-6. **Setup HTTPS** (e.g., with cert-manager):
+7. **Setup HTTPS** (e.g., with cert-manager):
    ```bash
    helm repo add jetstack https://charts.jetstack.io
    helm install cert-manager jetstack/cert-manager \
      --namespace cert-manager --create-namespace
    ```
+
+8. **Serve the dashboard:**
+   - Production: `npm run build` and serve `src/frontend/dist` with Nginx or a simple static server.
+   - For demos: keep `npm run dev` and access the dashboard over SSH tunnel.
+
+### Secrets Strategy (Production)
+
+- Demo setup relies on Helm-generated Kubernetes secrets.
+- Production should use sealed secrets, external secrets manager, or cluster-native secret encryption.
+
+### Upgrade / Rollback (Helm)
+
+- Each store is a Helm release in its own namespace. Updates are applied via `helm upgrade --install`.
+- To roll back a specific store: `helm rollback <release> -n <namespace> <revision>`.
+- For global changes, update `charts/*` or `config/values-prod.yaml` and re-run provisioning or upgrade per store.
 
 ## API Documentation
 
@@ -627,12 +657,10 @@ Backend REST API is self-documented via OpenAPI/Swagger:
 ## Support & Documentation
 
 - **Technical Architecture:** [docs/TECHNICAL_OVERVIEW.md](docs/TECHNICAL_OVERVIEW.md)
+- **System Design & Tradeoffs:** [docs/SYSTEM_DESIGN_TRADEOFFS.md](docs/SYSTEM_DESIGN_TRADEOFFS.md)
 - **Demo Script:** [docs/DEMO_VIDEO_SCRIPT.md](docs/DEMO_VIDEO_SCRIPT.md)
 - **Kubernetes Docs:** https://kubernetes.io/docs/
 - **Helm Docs:** https://helm.sh/docs/
 - **WooCommerce API:** https://woocommerce.github.io/woocommerce-rest-api-docs/
 - **Medusa Docs:** https://medusajs.com/development/
 
-## License
-
-MIT
