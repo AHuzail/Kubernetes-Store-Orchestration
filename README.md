@@ -1,4 +1,4 @@
-# Deep Lagoon - Multi-Tenant Store Provisioning Platform
+# Multi-Tenant Store Provisioning Platform
 
 A Kubernetes-native platform for provisioning isolated WooCommerce and Medusa storefronts on-demand with integrated guardrails and resource management.
 
