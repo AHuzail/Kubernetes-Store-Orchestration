@@ -654,13 +654,4 @@ Backend REST API is self-documented via OpenAPI/Swagger:
 | DELETE | `/api/v1/stores/{id}` | Delete store and all resources |
 | GET | `/api/v1/audit-events` | List all provisioning events |
 
-## Support & Documentation
-
-- **Technical Architecture:** [docs/TECHNICAL_OVERVIEW.md](docs/TECHNICAL_OVERVIEW.md)
-- **System Design & Tradeoffs:** [docs/SYSTEM_DESIGN_TRADEOFFS.md](docs/SYSTEM_DESIGN_TRADEOFFS.md)
-- **Demo Script:** [docs/DEMO_VIDEO_SCRIPT.md](docs/DEMO_VIDEO_SCRIPT.md)
-- **Kubernetes Docs:** https://kubernetes.io/docs/
-- **Helm Docs:** https://helm.sh/docs/
-- **WooCommerce API:** https://woocommerce.github.io/woocommerce-rest-api-docs/
-- **Medusa Docs:** https://medusajs.com/development/
 
